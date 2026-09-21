@@ -3,45 +3,36 @@ package com.example.queueless
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.activity.viewModels
+import androidx.compose.runtime.*
+import com.example.queueless.ui.screens.LiveTokenScreen
+import com.example.queueless.ui.screens.QueueScreen
 import com.example.queueless.ui.theme.QueueLessTheme
+import com.example.queueless.ui.viewmodel.QueueViewModel
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: QueueViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             QueueLessTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                var currentScreen by remember { mutableStateOf("join") }
+                val restaurantId = "rest_sample_01"
+
+                if (currentScreen == "join") {
+                    QueueScreen(
+                        viewModel = viewModel,
+                        restaurantId = restaurantId,
+                        onTokenGenerated = { currentScreen = "live" }
+                    )
+                } else {
+                    LiveTokenScreen(
+                        viewModel = viewModel,
+                        restaurantId = restaurantId
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    QueueLessTheme {
-        Greeting("Android")
     }
 }
